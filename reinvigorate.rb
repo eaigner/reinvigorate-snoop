@@ -28,7 +28,7 @@ class Reinvigorate
     ll = 10
     out = "\n"
     h.each { |k, v|
-      l = "#{k} => #{v}"
+      l = "#{k.to_s.chomp} => #{v.to_s.chomp}"
       ll = [ll, l.length].max
       out << l << "\n"
     }
@@ -47,7 +47,6 @@ class Reinvigorate
     rx_arsp = /email=(.*)&auth=(.*)&member_status=(.*)&username=(.*)/
     rx_manifest = /page_option(.*)=(.*)&website_title(.*)=(.*)&group_title(.*)=(.*)&hash(.*)=(.*)&url(.*)=(.*)&?/ # &length=(\d+)/
     rx_snoop = /stop=(.*)\r\nsnoop=(.*)/
-    rx_data = /title=(.*)&am=(.*)&ses=(.*)&rnd=(.*)&ct=(.*)&wkey=(.*)&ip=(.*)&bwr=(.*)&lt=(.*)&std=(.*)&bwrv=(.*)&nt=(.*)&os=(.*)&pp=(.*)&proxtm=(.*)&vt=(.*)&url=(.*)&ses_index=(.*)&cook=(.*)&osv=(.*)/
     
     if endpoint and /\w+\.\w+\.\w+/.match(endpoint)
       print ":: endpoint => #{endpoint}\n".yellow
@@ -61,36 +60,8 @@ class Reinvigorate
         # puts partial_data
         
         if @snooping
-          m = rx_data.match(partial_data)
-          if m and m.size == 21
-            ping = {
-              :title => m[1],
-              :am => m[2],
-              :ses => m[3],
-              :rnd => m[4],
-              :ct => m[5],
-              :wkey => m[6],
-              :ip => m[7],
-              :bwr => CGI::unescape(m[8]),
-              :lt => CGI::unescape(m[9]),
-              :std => m[10],
-              :bwrv => m[11],
-              :nt => m[12],
-              :os => m[13],
-              :pp => CGI::unescape(m[14]),
-              :proxtm => m[15],
-              :vt => m[16],
-              :url => CGI::unescape(m[17]),
-              :ses_index => m[18],
-              :cook => m[19],
-              :osv => CGI::unescape(m[20])
-            }
-            
-            self.pp(ping)
-            
-          else
-            puts "could not parse data:\n#{partial_data}"
-          end          
+          ping = CGI::parse(partial_data)
+          self.pp(ping)        
         end
         
         # check for message matches
