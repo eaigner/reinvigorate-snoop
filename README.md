@@ -1,4 +1,4 @@
-Reverse-engineered http://www.reinvigorate.net/ API
+Reverse-engineered [reinvigorate](http://www.reinvigorate.net/) ruby API script
 
 Required Gems:
 
