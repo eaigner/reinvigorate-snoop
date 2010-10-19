@@ -24,15 +24,21 @@ class Reinvigorate
     @password = pass
   end
   
-  def pp(h)
+  def pp(h, line_top = true, line_bottom = true)
     ll = 10
-    out = "\n"
+    out = ""
     h.each { |k, v|
       l = "#{k.to_s.chomp} => #{v.to_s.chomp}"
       ll = [ll, l.length].max
       out << l << "\n"
     }
-    puts "-"*ll << out << "-"*ll
+    if line_top
+      puts "-"*ll
+    end
+    puts out
+    if line_bottom
+      puts "-"*ll
+    end
   end
   
   def snoop
@@ -61,7 +67,7 @@ class Reinvigorate
         
         if @snooping
           ping = CGI::parse(partial_data)
-          self.pp(ping)        
+          self.pp(ping, true, false)        
         end
         
         # check for message matches
