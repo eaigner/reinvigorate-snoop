@@ -9,7 +9,12 @@ require 'net/http'
 require 'socket'
 require 'digest/sha1'
 require 'cgi'
+
+# gems
 require 'highline/import'
+require 'term/ansicolor'
+
+include Term::ANSIColor
 
 
 class Reinvigorate
@@ -45,7 +50,7 @@ class Reinvigorate
     rx_data = /title=(.*)&am=(.*)&ses=(.*)&rnd=(.*)&ct=(.*)&wkey=(.*)&ip=(.*)&bwr=(.*)&lt=(.*)&std=(.*)&bwrv=(.*)&nt=(.*)&os=(.*)&pp=(.*)&proxtm=(.*)&vt=(.*)&url=(.*)&ses_index=(.*)&cook=(.*)&osv=(.*)/
     
     if endpoint and /\w+\.\w+\.\w+/.match(endpoint)
-      puts ":: endpoint => #{endpoint}"
+      print ":: endpoint => #{endpoint}\n".yellow
       
       # contact snoop endpoint at port 8081
       socket = TCPSocket.open(endpoint, '8081')
@@ -84,7 +89,7 @@ class Reinvigorate
             self.pp(ping)
             
           else
-            puts "could not parse data:\n#{partial_data}"
+            print "could not parse data:\n#{partial_data}\n".red.bold
           end          
         end
         
@@ -97,14 +102,14 @@ class Reinvigorate
         if partial_data.length == 0
           break
         elsif clr and /ok/.match(clr[0])
-          puts ":: received ok => responding with password sha-1"
+          print ":: received ok => responding with password sha-1\n".green
           
           # send auth request
           pass_sha1 = Digest::SHA1.hexdigest(@password)
           socket.write("password=#{pass_sha1}&username=#{@user}\r\n")
           
         elsif arsp and /ok/.match(arsp[2])
-          puts ":: received authentication ok => fetching manifest"
+          print ":: received authentication ok => fetching manifest\n".green
           
           # send manifest request
           socket.write("manifest\r\n")
@@ -122,22 +127,22 @@ class Reinvigorate
             }
           }
           
-          puts ":: received registered sites"
+          print ":: received registered sites\n".green
           sites.each { |site|
             self.pp(site)
           }
           
           # snoop on the first hash by default
           hash = sites[0][:hash]
-          puts ":: snooping on #{hash}"
+          print ":: snooping on #{hash}\n".green
           
           socket.write("snoop=#{hash}\r\n")
           
         elsif snoop and /ok/.match(snoop[2])
-          puts ":: snooping!"
+          print ":: snooping!\n".green
           @snooping = true
         elsif /auth=bad/.match(partial_data)
-          puts ":: bad auth!"
+          puts ":: bad auth!\n".red.bold
           break;
         end
       end
@@ -158,5 +163,5 @@ if ARGV[0]
   
   Reinvigorate.new(ARGV[0], pass).snoop
 else
-  puts "No username provided!"
+  print "No username provided!\n".red.bold
 end
