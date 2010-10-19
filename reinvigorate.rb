@@ -43,10 +43,10 @@ class Reinvigorate
     resp, endpoint = http.get("/snoop?uname=#{@user}")
     
     # define regular expressions
-    rx_clr = /client=(\w+)&protocol_version=(\d+)&win_client_version=(.*?)&mac_client_version=(\d+)/
-    rx_arsp = /email=(\w+%40\w+.\w+)&auth=(\w+)&member_status=(\w+)&username=(\w+)/
-    rx_manifest = /page_option(\d+)=(\w+)&website_title(\d+)=(\w+)&group_title(\d+)=([\w%]+)&hash(\d+)=([\w-]+)&url(\d+)=([\w%\.]+)/ # &length=(\d+)/
-    rx_snoop = /stop=(\w+)\r\nsnoop=(\w+)/
+    rx_clr = /client=(.*)&protocol_version=(.*)&win_client_version=(.*)&mac_client_version=(.*)/
+    rx_arsp = /email=(.*)&auth=(.*)&member_status=(.*)&username=(.*)/
+    rx_manifest = /page_option(.*)=(.*)&website_title(.*)=(.*)&group_title(.*)=(.*)&hash(.*)=(.*)&url(.*)=(.*)&?/ # &length=(\d+)/
+    rx_snoop = /stop=(.*)\r\nsnoop=(.*)/
     rx_data = /title=(.*)&am=(.*)&ses=(.*)&rnd=(.*)&ct=(.*)&wkey=(.*)&ip=(.*)&bwr=(.*)&lt=(.*)&std=(.*)&bwrv=(.*)&nt=(.*)&os=(.*)&pp=(.*)&proxtm=(.*)&vt=(.*)&url=(.*)&ses_index=(.*)&cook=(.*)&osv=(.*)/
     
     if endpoint and /\w+\.\w+\.\w+/.match(endpoint)
