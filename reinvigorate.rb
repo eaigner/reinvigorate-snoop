@@ -4,10 +4,12 @@
 # Website:  chocomoko.com
 #
 
+require 'rubygems'
 require 'net/http'
 require 'socket'
 require 'digest/sha1'
 require 'cgi'
+require 'highline/import'
 
 
 class Reinvigorate
@@ -43,7 +45,7 @@ class Reinvigorate
     rx_data = /title=(.*)&am=(.*)&ses=(.*)&rnd=(.*)&ct=(.*)&wkey=(.*)&ip=(.*)&bwr=(.*)&lt=(.*)&std=(.*)&bwrv=(.*)&nt=(.*)&os=(.*)&pp=(.*)&proxtm=(.*)&vt=(.*)&url=(.*)&ses_index=(.*)&cook=(.*)&osv=(.*)/
     
     if endpoint and /\w+\.\w+\.\w+/.match(endpoint)
-      puts "response-body: #{endpoint}"
+      puts ":: endpoint => #{endpoint}"
       
       # contact snoop endpoint at port 8081
       socket = TCPSocket.open(endpoint, '8081')
@@ -51,6 +53,7 @@ class Reinvigorate
       
       while true
         partial_data = socket.recv(1012)
+        # puts partial_data
         
         if @snooping
           m = rx_data.match(partial_data)
@@ -133,6 +136,9 @@ class Reinvigorate
         elsif snoop and /ok/.match(snoop[2])
           puts ":: snooping!"
           @snooping = true
+        elsif /auth=bad/.match(partial_data)
+          puts ":: bad auth!"
+          break;
         end
       end
       socket.close
@@ -143,4 +149,14 @@ class Reinvigorate
   end
 end
 
-Reinvigorate.new('username', 'pass').snoop
+
+# check script arguments
+if ARGV[0]
+  pass = ask("Enter password:") { |q|
+    q.echo = "*"
+  }
+  
+  Reinvigorate.new(ARGV[0], pass).snoop
+else
+  puts "No username provided!"
+end
