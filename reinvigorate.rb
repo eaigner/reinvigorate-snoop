@@ -24,23 +24,6 @@ class Reinvigorate
     @password = pass
   end
   
-  def pp(h, line_top = true, line_bottom = true)
-    ll = 10
-    out = ""
-    h.each { |k, v|
-      l = "#{k.to_s.chomp} => #{v.to_s.chomp}"
-      ll = [ll, l.length].max
-      out << l << "\n"
-    }
-    if line_top
-      puts "-"*ll
-    end
-    puts out
-    if line_bottom
-      puts "-"*ll
-    end
-  end
-  
   def snoop
     @snooping = false
     
@@ -67,7 +50,7 @@ class Reinvigorate
         
         if @snooping
           ping = CGI::parse(partial_data)
-          self.pp(ping, true, false)        
+          self.pp(:hash => ping, :lbottom => false, :print_empty => false)
         end
         
         # check for message matches
@@ -106,7 +89,7 @@ class Reinvigorate
           
           print ":: received registered sites\n".green
           sites.each { |site|
-            self.pp(site)
+            self.pp(:hash => site)
           }
           
           # snoop on the first hash by default
@@ -129,6 +112,26 @@ class Reinvigorate
       raise "could not reach snoop endpoint"
     end
   end
+  
+  def pp(params)
+    ll = 10
+    out = ""
+    params[:hash].each { |k, v|
+      if (params[:print_empty].nil? or params[:print_empty] == true) or (params[:print_empty] == false and v.to_s.length > 0)
+        l = "#{k.to_s.chomp} => #{v.to_s.chomp}"
+        ll = [ll, l.length].max
+        out << l << "\n"
+      end
+    }
+    if params[:ltop].nil? or params[:ltop] == true
+      puts "-"*ll
+    end
+    puts out
+    if params[:lbottom].nil? or params[:lbottom] == true
+      puts "-"*ll
+    end
+  end
+  
 end
 
 
