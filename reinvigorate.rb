@@ -89,7 +89,7 @@ class Reinvigorate
             self.pp(ping)
             
           else
-            print "could not parse data:\n#{partial_data}\n".red.bold
+            puts "could not parse data:\n#{partial_data}"
           end          
         end
         
